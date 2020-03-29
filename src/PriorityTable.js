@@ -5,7 +5,7 @@ import "./BalanceTable.css";
 
 
 
-const BalanceTable = ({balanceTable, handleBalanceChange, addNewRow}) => {
+const PriorityTable = ({priorityTable, handlePriorityChange, addNewRow}) => {
     // const [balanceTable, setBalanceRow] = useState(_default)
     
     // const handleBalanceChange = event => {
@@ -19,12 +19,15 @@ const BalanceTable = ({balanceTable, handleBalanceChange, addNewRow}) => {
     // }
     return (
         <div className="table">
-          <div className="table-title">Balance</div>
+          <div className="table-title">Priority Table</div>
           <div className="table-content">
             <div className="table-header">
               <div className="table-row">
                 <div className="table-data">
-                  <div>Name</div>
+                  <div>Source</div>
+                </div>
+                <div className="table-data">
+                  <div>Target</div>
                 </div>
                 <div className="table-data">
                   <div>Amount</div>
@@ -32,15 +35,24 @@ const BalanceTable = ({balanceTable, handleBalanceChange, addNewRow}) => {
               </div>
             </div>
             <div className="table-body">
-              {balanceTable.map((item, index) => (
+              {priorityTable.map((item, index) => (
                 <div className="table-row" key={index}>
                   <div className="table-data">
                     <input
-                      name="name"
+                      name="source"
                       data-id={index}
                       type="text"
-                      value={item.name}
-                      onChange={handleBalanceChange}
+                      value={item.source}
+                      onChange={handlePriorityChange}
+                    />
+                  </div>
+                  <div className="table-data">
+                    <input
+                      name="target"
+                      data-id={index}
+                      type="text"
+                      value={item.target}
+                      onChange={handlePriorityChange}
                     />
                   </div>
                   <div className="table-data">
@@ -49,7 +61,7 @@ const BalanceTable = ({balanceTable, handleBalanceChange, addNewRow}) => {
                       data-id={index}
                       type="number"
                       value={item.amount}
-                      onChange={handleBalanceChange}
+                      onChange={handlePriorityChange}
                     />
                   </div>
                 </div>
@@ -67,4 +79,4 @@ const BalanceTable = ({balanceTable, handleBalanceChange, addNewRow}) => {
 
 }
 
-export default BalanceTable
+export default PriorityTable
