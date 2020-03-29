@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
+import BalanceTable from './BalanceTable';
 
 function App() {
   const balanceArr = {
@@ -181,27 +182,21 @@ function App() {
 
         </div>
 
-
-
-
-      </div>
-      {/* <div className="App-header">
-        <div className="App-header-content">
-          Settling Balances
+        <div className="App-output">
+          {outputArr.map((value) =>(
+            <div> {value} </div>
+          ))}
         </div>
-      </div>
-      <div className="App-body">
-       
-        <button onClick={() => settleBalances()}>
-           Settle 
-        </button>
-        {isPriorityError &&
-          <div> Error </div>
-        
-        }
+        <div>
+          <BalanceTable />
+        </div>
+
+
+
 
       </div>
-      */}
+      
+
     </div>
   );
 }

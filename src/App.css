@@ -38,6 +38,10 @@
   flex-direction: row;
   align-content: space-evenly;
 }
+
+.App-output{
+  
+}
 .table-1{
   border-radius: 2%;
   width: 45%;
