@@ -6,17 +6,7 @@ import "./BalanceTable.css";
 
 
 const PriorityTable = ({priorityTable, handlePriorityChange, addNewRow}) => {
-    // const [balanceTable, setBalanceRow] = useState(_default)
-    
-    // const handleBalanceChange = event => {
-    //     const _temp = [...balanceTable]
-    //     _temp[event.target.dataset.id][event.target.name] = event.target.value;
-    //     setBalanceRow(_temp)
-    // }
 
-    // const addNewRow = () => {
-    //     setBalanceRow(prevRows => [...prevRows, {name: "", amount: 0}])
-    // }
     return (
         <div className="table">
           <div className="table-title">Priority Table</div>

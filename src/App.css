@@ -1,12 +1,35 @@
 .App {
-  background-color: #f49b9b;
   position:fixed;
   width:100%;
   height:100%;
   top:0px;
   left:0px;
   z-index:1000;
+  background: linear-gradient(151deg, #7ca9f3, #9ef3dd, #c99ef3);
+  background-size: 600% 600%;
+  
+  -webkit-animation: backgroundAnimation 22s ease infinite;
+  -moz-animation: backgroundAnimation 22s ease infinite;
+  animation: backgroundAnimation 22s ease infinite;
+  
 }
+
+@-webkit-keyframes backgroundAnimation {
+  0%{background-position:49% 0%}
+  50%{background-position:52% 100%}
+  100%{background-position:49% 0%}
+}
+@-moz-keyframes backgroundAnimation {
+  0%{background-position:49% 0%}
+  50%{background-position:52% 100%}
+  100%{background-position:49% 0%}
+}
+@keyframes backgroundAnimation { 
+  0%{background-position:49% 0%}
+  50%{background-position:52% 100%}
+  100%{background-position:49% 0%}
+}
+
 .App-body {
   display: flex;
   flex-direction: column;
@@ -25,7 +48,7 @@
   padding-bottom: 3%;
   padding-left: 2%;
   font-size: 34px;
-  color: dimgray;
+  color: black;
   background-color: #f4f4f4;
   filter: drop-shadow(0px 4px 10px gray);
   border-bottom: 1px gray;
@@ -42,6 +65,30 @@
 .App-output{
   
 }
+
+button{
+  background: #cecece;
+  border: none;
+  color: black;
+  text-align: center;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 0.25em;
+  margin-left: 1%;
+  margin-right: 1%;
+
+  filter: drop-shadow(0px 0px 2px gray);
+
+
+
+}
+input{
+  background: #f4f4f4;
+  border: none;
+  padding: 10px;
+  border-bottom: 1px solid #cecece;
+
+}
 .table-1{
   border-radius: 2%;
   width: 45%;
@@ -53,17 +100,27 @@
 }
 
 table {
+  filter: drop-shadow(0px 0px 5px gray);
+
   border-collapse: collapse;
   text-align: left;
   width: 100%;
   border-radius: 2%;
 }
 table tr {
-  background: white;
-  border-bottom: 1px solid
+  background: #f4f4f4;
+  border-bottom: 1px solid #cecece
 }
 table th, table td {
+  
   padding: 10px 20px;
+  
+}
+table th {
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+  padding: 1rem;
 }
 table td span {
   background: #eee;
@@ -76,4 +133,5 @@ table td span {
   text-transform: uppercase;
   top: 0;
   left: 0;
+  border-right: 1px solid #cecece
 }

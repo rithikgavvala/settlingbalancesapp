@@ -7,7 +7,7 @@ import PriorityTable from './PriorityTable'
 
 function App() {
   const _default = []
-
+  const outputArr = []
   const [balanceTable, setBalanceRow] = useState(_default)
     
   const handleBalanceChange = event => {
@@ -17,7 +17,16 @@ function App() {
   }
 
   const addNewBalanceRow = () => {
-      setBalanceRow(prevRows => [...prevRows, {name: "", amount: 0}])
+      setBalanceRow(prevRows => [...prevRows, {name: "", amount: parseInt(0)}])
+  }
+
+  const handleSettleClick = () => {
+    const returnTable = settleBalances(priorityTable, balanceTable)
+    console.log("RETURN " + returnTable) 
+    console.log("OUTPUT" + outputTable)  
+    setOutputTable(outputTable => [...outputTable, JSON.stringify(returnTable)])
+
+    setOutputTable(settleBalances(priorityTable, balanceTable))
   }
 
   const [priorityTable, setPriorityRow] = useState(_default)
@@ -29,51 +38,11 @@ function App() {
   }
 
   const addNewPriorityRow = () => {
-      setPriorityRow(prevRows => [...prevRows, {source: "", target:  "", amount: 0}])
+      setPriorityRow(prevRows => [...prevRows, {source: "", target:  "", amount: parseInt(0)}])
   }
 
+  const [outputTable, setOutputTable] = useState(outputArr)
 
-
-
-
-
-  const balanceArr = [
-    {
-      name: "John",
-      amount: -700
-    },
-    {
-      name: "Peter",
-      amount: 500
-    },
-    {
-      name: "Russell",
-      amount: -200
-    },
-    {
-      name: "Smith",
-      amount:700 
-    },
-    {
-      name: "Adam",
-      amount: -300
-    }
-  ]
-
-
-  const priorityArr = [
-    {
-      source: "John",
-      target: "Peter",
-      amount: 200
-    },
-    {
-      source: "John",
-      target: "Peter",
-      amount: 300
-    }
-  ]
-  const outputArr = []
   const negArr = []
   const posArr = []
 
@@ -81,116 +50,121 @@ function App() {
   let negAmt = 0
   let totalTrans = 0 
 
-  const [isPriortyError, setPriorityErr] = useState(false)
+  const [isPriorityError, setPriorityErr] = useState(false)
 
-  const prioritizeBalances = (priorityArr, balanceArr ) => {
+  const prioritizeBalances = (priorityTable, balanceTable ) => {
     let isError = false
-
-    for(var i = 0 ; priorityArr.length; i++){
-      const values = Object.values(balanceArr)
-      let srcIndex = 0
-      let tarIndex = 0
-      let isSrcFound = false;
-      let isTarFound = false;
-      const tempArr = balanceArr
-      for (const val of values){
-        if (val == priorityArr[i].source){
-          isSrcFound = true;
-          break;
-        }
-        srcIndex++;
-      }
-      for (const val of values){
-        if (val == priorityArr[i].target){
-          isTarFound = true;
-          break;
-        }
-        tarIndex++;
-      }
-      if(!isSrcFound || !isTarFound){
+    const tempArr = balanceTable
+    console.log("GOING INTO PRIORITY" + priorityTable)
+    
+    for(var i = 0 ; i < priorityTable.length; i++){
+      console.log("GOING INTO LOOP")
+      let srcIndex = balanceTable.findIndex(obj => obj.name == priorityTable[i].source)
+      let tarIndex = balanceTable.findIndex(obj => obj.name == priorityTable[i].target)
+      console.log("SRC"  + srcIndex)
+      console.log("TAR" + tarIndex)
+      if(tarIndex == -1 || srcIndex == -1){
         break;
       }
-      if(Math.abs(tempArr[srcIndex].amount) > priorityArr[i].amount && tempArr[tarIndex] > 0 && tempArr[tarIndex].amount > priorityArr[i].amount){
-        tempArr[srcIndex].amount += priorityArr[i].amount
-        tempArr[tarIndex].amount -= priorityArr[i].amount
+      console.log("Condition1 " + (Math.abs(tempArr[srcIndex].amount) > priorityTable[i].amount) )
+      console.log("Condition2 " + (tempArr[tarIndex].amount > 0))
+      console.log("val1 " + tempArr[tarIndex].amount)
+      console.log("val2 " + typeof(priorityTable[i].amount))
+      console.log("Condition3 " + (tempArr[tarIndex].amount < priorityTable[i].amount))
+
+      if(parseInt(Math.abs(tempArr[srcIndex].amount)) > parseInt(priorityTable[i].amount) && parseInt(tempArr[tarIndex].amount) > 0 && parseInt(tempArr[tarIndex].amount) > parseInt(priorityTable[i].amount)){
+      
+        tempArr[srcIndex].amount += priorityTable[i].amount
+        tempArr[tarIndex].amount -= priorityTable[i].amount
       }else{
+        console.log("FALSE CONDITION")
         isError = true; 
       }
-      if(isError){
-        return -1
-      }else{
-        return tempArr
-      }
-     
-      
-
     }
+    if(isError){
+      return -1
+    }else{
+      console.log("TEMP " + tempArr)
+
+      return tempArr
+    } 
   }
 
-  const settleBalances = (priorityArr, balanceArr) => {
-      const newBalanceArr = prioritizeBalances(priorityArr, balanceArr)
+  const settleBalances = (priorityTable, balanceTable) => {
+    console.log("PRIORITY " + priorityTable.length )
+      if (priorityTable.length != 0){
+        let newBalanceArr = prioritizeBalances(priorityTable, balanceTable)
+        console.log("test" + newBalanceArr)
+        if (newBalanceArr != -1){
+          balanceTable = newBalanceArr
 
-      if (newBalanceArr != -1){
-         //split into two arrays neg and pos
-          for(var i = 0; i < balanceArr.length; i++){
-            if(balanceArr[i].amount < 0){
-              negArr.push(
-                {
-                  name: balanceArr[i].name,
-                  amount: balanceArr[i].amount
-                }
-              )
-              negAmt += balanceArr[i].amount
-            }else{
-              posArr.push({
-                name: balanceArr[i].name,
-                amount: balanceArr[i].amount
-              }
-              )
-              posAmt += balanceArr[i].amount
+
+        }else{
+          setPriorityErr(true)
+        }
+
+
+      }
+    
+      //split into two arrays neg and pos
+      for(var i = 0; i < balanceTable.length; i++){
+        if(balanceTable[i].amount < 0){
+          negArr.push(
+            {
+              name: balanceTable[i].name,
+              amount: balanceTable[i].amount
             }
-            totalTrans++
+          )
+          negAmt += balanceTable[i].amount
+        }else{
+          posArr.push({
+            name: balanceTable[i].name,
+            amount: balanceTable[i].amount
           }
-          
+          )
+          posAmt += balanceTable[i].amount
+        }
+        totalTrans++
+      }
+      
 
-          //distribute money
-          for(var i = 0; i < posArr.length; i++){
-            for(var j = 0; j < negArr.length; j++){
-              if(posArr[i].amount < Math.abs(negArr[j].amount)){
-                outputArr.push({
-                  source: posArr[i].name,
-                  target: negArr[j].name,
-                  amount: posArr[i].amount
-                })
-                negArr[j].amount = negArr[j].amount + posArr[i].amount
-                break
-              }else if (posArr[i].amount == Math.abs(negArr[j].count)){
-                outputArr.push({
-                  source: posArr[i].name,
-                  target: negArr[j].name,
-                  amount: posArr[i].amount
 
-                })
-                posArr[i].amount = 0 
-                negArr[j].amount = 0
-                break
-              }else{
-                outputArr.push({
-                  source: posArr[i].name,
-                  target: negArr[j].name,
-                  amount: Math.abs(negArr[j].amount)
-                })
-                posArr[i].amount = posArr[i].amount + negArr[j].amount
-                negArr[j] = 0
-              }
-            }
+
+    
+   
+      //distribute money
+      for(var i = 0; i < posArr.length; i++){
+        for(var j = 0; j < negArr.length; j++){
+          if(posArr[i].amount < Math.abs(negArr[j].amount)){
+            outputArr.push({
+              source: posArr[i].name,
+              target: negArr[j].name,
+              amount: parseInt(posArr[i].amount)
+            })
+            negArr[j].amount = negArr[j].amount + posArr[i].amount
+            break
+          }else if (posArr[i].amount == Math.abs(negArr[j].count)){
+            outputArr.push({
+              source: posArr[i].name,
+              target: negArr[j].name,
+              amount: parseInt(posArr[i].amount)
+
+            })
+            posArr[i].amount = parseInt(0) 
+            negArr[j].amount = parseInt(0)
+            break
+          }else{
+            outputArr.push({
+              source: posArr[i].name,
+              target: negArr[j].name,
+              amount: parseInt(Math.abs(negArr[j].amount))
+            })
+            posArr[j].amount = posArr[i].amount + negArr[j].amount
+            negArr[j] = 0
           }
-
-      }else{
-        setPriorityErr(true)
+        }
       }
 
-     
       console.log(outputArr)
       return outputArr
     }
@@ -220,8 +194,7 @@ function App() {
                   </tr>  
                 </thead>
                 <tbody>
-                  {console.log("TEST" + balanceArr)}
-                  {console.log("ANOTHER TES" + priorityArr)}
+         
                   {balanceTable.map((row) => (
                     <tr> <td>{row.name}</td><td>{row.amount}</td></tr>
                   ))}
@@ -258,7 +231,7 @@ function App() {
           </div>
   
           <div className="App-output">
-            {outputArr.map((value) =>(
+            {outputTable.map((value) =>(
               <div> {value} </div>
             ))}
           </div>
@@ -275,11 +248,52 @@ function App() {
           </div>
 
           
-          <button onClick={() => settleBalances(priorityTable, balanceTable)}>
+          <button onClick={() => handleSettleClick()}>
             Settle
-
           </button>
+          {
+            (outputTable.length != 0 ? (
+              <div className="App-table">
+          
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Source
+                    </th>
+                    <th>
+                      Target
+                    </th>
+                    <th>
+                      Amount
+                    </th>
+                  </tr>  
+                </thead>
+                <tbody>
+        
+            {outputTable.map((row) => (
+                    <tr><td>{row.source}</td><td>{row.target}</td> <td>
+                    {row.amount}
+                  </td>
+                    </tr>
+                  ))
+                  }
+                </tbody>
+              </table>
+         
+
+          </div>
   
+
+            ) : <div> </div>)
+
+          }
+          {
+            (isPriorityError &&
+              <div>Error</div>
+              )
+          }
+          
   
   
   
