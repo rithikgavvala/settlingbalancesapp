@@ -6,9 +6,12 @@ import PriorityTable from './PriorityTable'
 
 
 function App() {
-  const _default = []
-  const outputArr = []
+  let _default = []
+  let outputArr = []
   const [balanceTable, setBalanceRow] = useState(_default)
+  const [outputTable, setOutputTable] = useState(outputArr)
+  const [priorityTable, setPriorityRow] = useState(_default)
+
     
   const handleBalanceChange = event => {
       const _temp = [...balanceTable]
@@ -22,14 +25,22 @@ function App() {
 
   const handleSettleClick = () => {
     const returnTable = settleBalances(priorityTable, balanceTable)
-    console.log("RETURN " + returnTable) 
-    console.log("OUTPUT" + outputTable)  
-    setOutputTable(outputTable => [...outputTable, JSON.stringify(returnTable)])
+    console.log("RETURN " + JSON.stringify(returnTable, null, '\t')); 
+    console.log("OUTPUT" + JSON.stringify(outputTable, null, '\t'));
+    console.log("PROP RETURN" + typeof(returnTable) )
+    console.log("PROP OUTPUT" + typeof(outputTable))
+ 
+    setOutputTable([...returnTable]);
 
-    setOutputTable(settleBalances(priorityTable, balanceTable))
+
+
+  
+    // let tmp =   [...outputTable, (returnTable[0])];
+    // console.log('Tmp: '+JSON.stringify(tmp, null, '\t'))
+    console.log("UPDATE " + JSON.stringify(outputTable, null, '\t'))
+
   }
 
-  const [priorityTable, setPriorityRow] = useState(_default)
     
   const handlePriorityRow = event => {
       const _temp = [...priorityTable]
@@ -41,7 +52,6 @@ function App() {
       setPriorityRow(prevRows => [...prevRows, {source: "", target:  "", amount: parseInt(0)}])
   }
 
-  const [outputTable, setOutputTable] = useState(outputArr)
 
   const negArr = []
   const posArr = []
