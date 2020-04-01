@@ -16,7 +16,7 @@ const BalanceTable = ({balanceTable, handleBalanceChange, addNewRow}) => {
                   <div>Name</div>
                 </div>
                 <div className="table-data">
-                  <div>Amount</div>
+                  <div>Balance</div>
                 </div>
               </div>
             </div>
@@ -34,10 +34,10 @@ const BalanceTable = ({balanceTable, handleBalanceChange, addNewRow}) => {
                   </div>
                   <div className="table-data">
                     <input
-                      name="amount"
+                      name="balance"
                       data-id={index}
                       type="number"
-                      value={item.amount}
+                      value={item.balance}
                       onChange={handleBalanceChange}
                     />
                   </div>

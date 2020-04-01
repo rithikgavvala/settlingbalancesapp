@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import BalanceTable from './BalanceTable';
 import PriorityTable from './PriorityTable'
+import { unstable_renderSubtreeIntoContainer } from 'react-dom';
 
 
 function App() {
@@ -11,7 +12,16 @@ function App() {
   const [balanceTable, setBalanceRow] = useState(_default)
   const [outputTable, setOutputTable] = useState(outputArr)
   const [priorityTable, setPriorityRow] = useState(_default)
+  const [errMessage, setErrMessage] = useState([])
+  const [settleCount, setSettleCount] = useState(0);
 
+  const increment = () => {
+    setSettleCount(settleCount + 1)
+  }
+
+  const addErrMessage = (err) => {
+    setErrMessage([...err])
+  }
     
   const handleBalanceChange = event => {
       const _temp = [...balanceTable]
@@ -19,11 +29,27 @@ function App() {
       setBalanceRow(_temp)
   }
 
+  const clearOutputTable = () => {
+    setOutputTable([])
+  }
+
+  const clearErrors = () => {
+    setErrMessage([])
+  }
+
+
+
   const addNewBalanceRow = () => {
-      setBalanceRow(prevRows => [...prevRows, {name: "", amount: parseInt(0)}])
+      setBalanceRow(prevRows => [...prevRows, {name: "", balance: parseInt(0)}])
   }
 
   const handleSettleClick = () => {
+    console.log(settleCount)
+    if(settleCount > 0){
+
+      clearErrors()
+    } 
+
     const returnTable = settleBalances(priorityTable, balanceTable)
     console.log("RETURN " + JSON.stringify(returnTable, null, '\t')); 
     console.log("OUTPUT" + JSON.stringify(outputTable, null, '\t'));
@@ -49,7 +75,7 @@ function App() {
   }
 
   const addNewPriorityRow = () => {
-      setPriorityRow(prevRows => [...prevRows, {source: "", target:  "", amount: parseInt(0)}])
+      setPriorityRow(prevRows => [...prevRows, {from: "", to:  "", amount: parseInt(0)}])
   }
 
 
@@ -62,122 +88,311 @@ function App() {
 
   const [isPriorityError, setPriorityErr] = useState(false)
 
-  const prioritizeBalances = (priorityTable, balanceTable ) => {
-    let isError = false
-    const tempArr = balanceTable
-    console.log("GOING INTO PRIORITY" + priorityTable)
+  // const prioritizeBalances = (priorityTable, balanceTable ) => {
+  //   let isError = false
+  //   const tempArr = balanceTable
+  //   console.log("GOING INTO PRIORITY" + priorityTable)
     
-    for(var i = 0 ; i < priorityTable.length; i++){
-      console.log("GOING INTO LOOP")
-      let srcIndex = balanceTable.findIndex(obj => obj.name == priorityTable[i].source)
-      let tarIndex = balanceTable.findIndex(obj => obj.name == priorityTable[i].target)
-      console.log("SRC"  + srcIndex)
-      console.log("TAR" + tarIndex)
-      if(tarIndex == -1 || srcIndex == -1){
-        break;
-      }
-      console.log("Condition1 " + (Math.abs(tempArr[srcIndex].amount) > priorityTable[i].amount) )
-      console.log("Condition2 " + (tempArr[tarIndex].amount > 0))
-      console.log("val1 " + tempArr[tarIndex].amount)
-      console.log("val2 " + typeof(priorityTable[i].amount))
-      console.log("Condition3 " + (tempArr[tarIndex].amount < priorityTable[i].amount))
+  //   for(var i = 0 ; i < priorityTable.length; i++){
+  //     console.log("GOING INTO LOOP")
+  //     let srcIndex = balanceTable.findIndex(obj => obj.name == priorityTable[i].source)
+  //     let tarIndex = balanceTable.findIndex(obj => obj.name == priorityTable[i].target)
+  //     console.log("SRC"  + srcIndex)
+  //     console.log("TAR" + tarIndex)
+  //     if(tarIndex == -1 || srcIndex == -1){
+  //       break;
+  //     }
+  //     console.log("Condition1 " + (Math.abs(tempArr[srcIndex].amount) > priorityTable[i].amount) )
+  //     console.log("Condition2 " + (tempArr[tarIndex].amount > 0))
+  //     console.log("val1 " + tempArr[tarIndex].amount)
+  //     console.log("val2 " + typeof(priorityTable[i].amount))
+  //     console.log("Condition3 " + (tempArr[tarIndex].amount < priorityTable[i].amount))
 
-      if(parseInt(Math.abs(tempArr[srcIndex].amount)) > parseInt(priorityTable[i].amount) && parseInt(tempArr[tarIndex].amount) > 0 && parseInt(tempArr[tarIndex].amount) > parseInt(priorityTable[i].amount)){
+  //     if(parseInt(Math.abs(tempArr[srcIndex].amount)) > parseInt(priorityTable[i].amount) && parseInt(tempArr[tarIndex].amount) > 0 && parseInt(tempArr[tarIndex].amount) > parseInt(priorityTable[i].amount)){
       
-        tempArr[srcIndex].amount += priorityTable[i].amount
-        tempArr[tarIndex].amount -= priorityTable[i].amount
-      }else{
-        console.log("FALSE CONDITION")
-        isError = true; 
-      }
-    }
-    if(isError){
-      return -1
-    }else{
-      console.log("TEMP " + tempArr)
+  //       tempArr[srcIndex].amount += priorityTable[i].amount
+  //       tempArr[tarIndex].amount -= priorityTable[i].amount
+  //     }else{
+  //       console.log("FALSE CONDITION")
+  //       isError = true; 
+  //     }
+  //   }
+  //   if(isError){
+  //     return -1
+  //   }else{
+  //     console.log("TEMP " + tempArr)
 
-      return tempArr
-    } 
+  //     return tempArr
+  //   } 
+  // }
+
+  const settleBalances = (preferences, finances) => {
+    //This is input1
+//     let finances = [
+//     {
+//         name: 'Aditya',
+//         balance: -861
+//     },
+//     {
+//         name: 'Manish',
+//         balance: 0
+//     },
+//     {
+//         name: 'Nara',
+//         balance: -2725
+//     },
+//     {
+//         name: 'Sumanth',
+//         balance: -387
+//     },
+//     {
+//         name: 'Madu',
+//         balance: 397
+//     },
+//     {
+//         name: 'Chary',
+//         balance: 1256
+//     },
+//     {
+//         name: 'Uma',
+//         balance: 3100
+//     },
+//     {
+//         name: 'Siva',
+//         balance: -796
+//     },
+//     {
+//         name: 'Venum',
+//         balance: 383
+//     },
+//     {
+//         name: 'Praveen',
+//         balance: 240
+//     },
+//     {
+//         name: 'Satish',
+//         balance: -607
+//     }
+//     ];
+
+// // This is input2
+// let preferences = [
+//     {
+//         from: 'Nara',
+//         to: 'Uma',
+//         amount: 0
+//     },
+
+//     {
+//         from: 'Satish',
+//         to: 'Venum',
+//         amount: 0
+//     },
+
+//     {
+//         from: 'Sumanth',
+//         to: 'Madu',
+//         amount: 0
+//     }
+
+
+// ];
+
+
+//------------
+let validationErrors = [];
+let winners = []
+let losers = []
+if(finances.length < 2){
+  validationErrors.push("ERROR: Input table size invalid.")
+}else{
+  winners = finances.filter( player => player.balance > 0 );
+  losers  = finances.filter( player => player.balance < 0 ).map( player => { return { name: player.name, balance: -1*player.balance}  });
+  if(winners.length == 0 || losers.length == 0){
+    validationErrors.push("ERROR: There are either no winners or no losers in the game")
+  }else{
+    let winnerBalanceTotal =
+        winners.reduce( (total, person) => {
+            return { name: person.name, balance: total.balance + person.balance };
+        } );
+
+    let loserBalanceTotal =
+        losers.reduce( (total, person) => {
+            return { name: person.name, balance: total.balance + person.balance };
+        } );
+
+    if (winnerBalanceTotal.balance != loserBalanceTotal.balance) {
+      validationErrors.push('The winner totals ['+winnerBalanceTotal.balance+'] do not add up to loser totals ['+loserBalanceTotal.balance+']');
+    }
+
   }
+}
+console.log(JSON.stringify(finances))
 
-  const settleBalances = (priorityTable, balanceTable) => {
-    console.log("PRIORITY " + priorityTable.length )
-      if (priorityTable.length != 0){
-        let newBalanceArr = prioritizeBalances(priorityTable, balanceTable)
-        console.log("test" + newBalanceArr)
-        if (newBalanceArr != -1){
-          balanceTable = newBalanceArr
+console.log("WIN  " + JSON.stringify(winners))
 
 
-        }else{
-          setPriorityErr(true)
-        }
+//
+// Validation Checks
+//
+
+//
+// Rule 1: Winner balance total should equal to losers balance total
+//
 
 
-      }
-    
-      //split into two arrays neg and pos
-      for(var i = 0; i < balanceTable.length; i++){
-        if(balanceTable[i].amount < 0){
-          negArr.push(
-            {
-              name: balanceTable[i].name,
-              amount: balanceTable[i].amount
-            }
-          )
-          negAmt += balanceTable[i].amount
-        }else{
-          posArr.push({
-            name: balanceTable[i].name,
-            amount: balanceTable[i].amount
-          }
-          )
-          posAmt += balanceTable[i].amount
-        }
-        totalTrans++
-      }
-      
-
-
-
-    
-   
-      //distribute money
-      for(var i = 0; i < posArr.length; i++){
-        for(var j = 0; j < negArr.length; j++){
-          if(posArr[i].amount < Math.abs(negArr[j].amount)){
-            outputArr.push({
-              source: posArr[i].name,
-              target: negArr[j].name,
-              amount: parseInt(posArr[i].amount)
-            })
-            negArr[j].amount = negArr[j].amount + posArr[i].amount
-            break
-          }else if (posArr[i].amount == Math.abs(negArr[j].count)){
-            outputArr.push({
-              source: posArr[i].name,
-              target: negArr[j].name,
-              amount: parseInt(posArr[i].amount)
-
-            })
-            posArr[i].amount = parseInt(0) 
-            negArr[j].amount = parseInt(0)
-            break
-          }else{
-            outputArr.push({
-              source: posArr[i].name,
-              target: negArr[j].name,
-              amount: parseInt(Math.abs(negArr[j].amount))
-            })
-            posArr[j].amount = posArr[i].amount + negArr[j].amount
-            negArr[j] = 0
-          }
-        }
-      }
-
-      console.log(outputArr)
-      return outputArr
+//
+// Rule 2: Preference.from: must be a loser and the Preference.amount must be a smaller quantity than his loss
+//
+preferences.forEach( pref => {
+    let source = losers.find(x => x.name == pref.from);
+    if (source == null) {
+        validationErrors.push(pref.from+' does not appear to have lost any money in the game. Yet, there is a preference to transfer money from this person');
+    } else if (source.balance < pref.amount ) {
+        validationErrors.push('The preference entry for '+pref.from+' has amount exceeding what he has actually lost in the game');
     }
+});
+
+//
+// Rule 3: Preference.to: must be a winner and the Preference.amount must be a smaller quantity than his wins
+//
+preferences.forEach( pref => {
+    let source = winners.find(x => x.name == pref.to);
+    if (source == null) {
+        validationErrors.push(pref.to+' does not appear to have won any money in the game. Yet, there is a preference to transfer money to this person');
+    } else if (source.balance < pref.amount ) {
+        validationErrors.push('The preference entry for '+pref.to+' has amount exceeding what he has actually won in the game');
+    }
+});
+
+// function
+// subtract dollar amount from the player kitty
+// arrange the records in descending order
+//
+let adjustDollarAmounts = function(list, name, amount) {
+    let tempList = [];
+    list.forEach( player => {
+        if (player.name == name) {
+            let newBalance = player.balance - amount;
+            if (newBalance > 0) {
+                tempList.push({ name: name, balance:  newBalance })
+            }
+        } else {
+            tempList.push(player);
+        }
+    });
+
+    // if there are any entries in the list sort them.
+    if (tempList.length > 0) {
+        return tempList.sort( (x, y) => (x.balance < y.balance) ? 1 : -1);
+    } else {
+        return tempList;
+    }
+
+}
+
+//
+// Perform one transaction
+// move the said amount from one player to another
+// refresh the winner and loser lists
+//
+let transact = function(from, to, amount) {
+    // from the winner list remove subtract the amount
+    return {
+        winners: adjustDollarAmounts(winners, to, amount),
+        losers: adjustDollarAmounts(losers, from, amount),
+        transaction: { from: from, to: to, amount: amount }
+    }
+}
+//
+// Do validation checks here first
+//
+
+
+let transactions = [];
+
+
+if (validationErrors.length <= 0 ) {
+// perform preferred transactions
+    preferences.forEach( preference => { // take one preference at a time
+        let theLoser = losers.find( player => player.name == preference.from );
+        let theWinner = winners.find( player => player.name == preference.to );
+
+        // protect from over-transfer
+        // does the winner really have pending balance exceeding the preferred transfer amount
+        // if not cap it
+        let amountToTransfer = Math.min( theLoser.balance, theWinner.balance);
+        if (preference.amount > 0) {
+            // we have a preference amount given
+            amountToTransfer = Math.min(amountToTransfer, preference.amount); // pick the lower of the two
+        }
+        let tx = transact(preference.from, preference.to, amountToTransfer);
+        winners = tx.winners;
+        losers = tx.losers;
+        transactions.push(tx.transaction);
+    });
+
+// perform the greedy moves
+    while( losers.length > 0 && winners.length > 0 ) {
+        let firstLoser = losers[0];
+        let firstWinner = winners[0];
+        let amount = (firstLoser.balance > firstWinner.balance) ? firstWinner.balance : firstLoser.balance;
+
+        let tx = transact( firstLoser.name, firstWinner.name, amount);
+        winners = tx.winners;
+        losers = tx.losers;
+        transactions.push(tx.transaction);
+    }
+    //console.log(JSON.stringify(transactions, null, '\t'));
+
+    if (winners.length > 0) {
+        validationErrors.push('ERROR: there are some winners left. Something is not right');
+    }
+    if (losers.length > 0) {
+        validationErrors.push('ERROR: there are some losers left. Something is not right');
+    }
+
+    let sendTotals = {};
+    let receiveTotals = {};
+
+    // find the send and receive totals
+    transactions.forEach(tx => {
+        sendTotals[tx.from] = (sendTotals[tx.from] ?  sendTotals[tx.from] : 0) + tx.amount;
+        receiveTotals[tx.to] = (receiveTotals[tx.to] ? receiveTotals[tx.to] : 0) + tx.amount;
+    });
+
+    console.log('Transactions');
+    console.log('---------------');
+    transactions.sort( (x, y) => x.from > y.from ? 1 : -1 ).forEach( tx => {
+        console.log(tx.from + ' --> ' + tx.to + ' :\t\t\t'+tx.amount);
+    });
+
+    console.log('People Sending Money');
+    console.log('---------------');
+    let totalMoneySent = 0;
+    let totalMoneyReceived = 0;
+    Object.keys(sendTotals).forEach( key => {
+        console.log(key+ ' sending a total of:\t\t\t '+sendTotals[key]);
+        totalMoneySent += sendTotals[key];
+    });
+    console.log('People Receiving Money');
+    console.log('---------------');
+    Object.keys(receiveTotals).forEach( key => {
+        console.log(key+ ' receiving a total of:\t\t\t '+receiveTotals[key]);
+        totalMoneyReceived += receiveTotals[key];
+    });
+    console.log('---------------');
+    console.log('Total Money Sent: '+totalMoneySent);
+    console.log('Total Money Received: '+totalMoneyReceived);
+
+} else {
+    setErrMessage(validationErrors)
+    clearOutputTable()
+    console.log(JSON.stringify(validationErrors, null, '\t'));
+}
+
+    return transactions
+  }
 
 
   
@@ -206,7 +421,7 @@ function App() {
                 <tbody>
          
                   {balanceTable.map((row) => (
-                    <tr> <td>{row.name}</td><td>{row.amount}</td></tr>
+                    <tr> <td>{row.name}</td><td>{row.balance}</td></tr>
                   ))}
                 </tbody>
               </table>
@@ -216,10 +431,10 @@ function App() {
                 <thead>
                   <tr>
                     <th>
-                      Source
+                      From
                     </th>
                     <th>
-                      Target
+                      To
                     </th>
                     <th>
                       Amount
@@ -228,7 +443,7 @@ function App() {
                 </thead>
                 <tbody>
                   {priorityTable.map((row) => (
-                    <tr><td>{row.source}</td><td>{row.target}</td> <td>
+                    <tr><td>{row.from}</td><td>{row.to}</td> <td>
                     {row.amount}
                   </td>
                     </tr>
@@ -240,11 +455,6 @@ function App() {
   
           </div>
   
-          <div className="App-output">
-            {outputTable.map((value) =>(
-              <div> {value} </div>
-            ))}
-          </div>
           <div className="App-table">
             <div className="table-1">
               <div>
@@ -262,17 +472,17 @@ function App() {
             Settle
           </button>
           {
-            (outputTable.length != 0 ? (
-              <div className="App-table">
+            ((outputTable.length != 0) ? (
+              <div className="App-output-table">
           
               <table>
                 <thead>
                   <tr>
                     <th>
-                      Source
+                      From
                     </th>
                     <th>
-                      Target
+                      To
                     </th>
                     <th>
                       Amount
@@ -282,9 +492,12 @@ function App() {
                 <tbody>
         
             {outputTable.map((row) => (
-                    <tr><td>{row.source}</td><td>{row.target}</td> <td>
-                    {row.amount}
-                  </td>
+              <tr>
+                    <td>{row.from}</td>
+                    <td>{row.to}</td>
+                    <td>
+                        {row.amount}
+                    </td>
                     </tr>
                   ))
                   }
@@ -297,12 +510,29 @@ function App() {
 
             ) : <div> </div>)
 
+
+
           }
-          {
-            (isPriorityError &&
-              <div>Error</div>
-              )
-          }
+          {errMessage.length > 0 ? 
+          
+          <div className="App-output-table"> 
+          <table>
+            <thead>
+              <tr>
+                <th>Error(s)</th></tr>
+            </thead>
+            <tbody>
+              {errMessage.map((row) => (
+                <tr><td>{row}</td></tr>
+              ))}
+            </tbody>
+          </table>
+
+        </div>
+          
+          
+           : <div></div>}
+        
           
   
   

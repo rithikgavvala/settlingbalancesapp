@@ -14,10 +14,10 @@ const PriorityTable = ({priorityTable, handlePriorityChange, addNewRow}) => {
             <div className="table-header">
               <div className="table-row">
                 <div className="table-data">
-                  <div>Source</div>
+                  <div>From</div>
                 </div>
                 <div className="table-data">
-                  <div>Target</div>
+                  <div>To</div>
                 </div>
                 <div className="table-data">
                   <div>Amount</div>
@@ -29,19 +29,19 @@ const PriorityTable = ({priorityTable, handlePriorityChange, addNewRow}) => {
                 <div className="table-row" key={index}>
                   <div className="table-data">
                     <input
-                      name="source"
+                      name="from"
                       data-id={index}
                       type="text"
-                      value={item.source}
+                      value={item.from}
                       onChange={handlePriorityChange}
                     />
                   </div>
                   <div className="table-data">
                     <input
-                      name="target"
+                      name="to"
                       data-id={index}
                       type="text"
-                      value={item.target}
+                      value={item.to}
                       onChange={handlePriorityChange}
                     />
                   </div>
